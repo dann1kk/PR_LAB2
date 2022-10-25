@@ -35,7 +35,7 @@ def run_consumer():
     consumer_thread = Thread(target = lambda: app.run(host = '0.0.0.0', port = 8082, debug = False, use_reloader = False), daemon = True)
     threads.append(consumer_thread)
     sleep(3)
-    thread_random = random.randint(5, 30)
+    thread_random = 20
     for _ in range(thread_random):
         thread = Thread(target = send_order)
         threads.append(thread)

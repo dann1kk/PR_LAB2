@@ -55,10 +55,11 @@ def run_aggregator():
     producer_thread = Thread(target = lambda: app.run(host = '0.0.0.0', port = 8081, debug = False, use_reloader = False), daemon = True)
     threads.append(producer_thread)
     sleep(3)
-    thread_random = random.randint(5, 30)
+    thread_random = 20
     for _ in range(thread_random):
         consumers_thread = Thread(target = send_consumer)
         threads.append(consumers_thread)
+    for _ in range(thread_random):
         producers_thread = Thread(target = send_producer)
         threads.append(producers_thread)
 
