@@ -6,6 +6,7 @@ from time import sleep
 import time
 
 threads = []
+thread_random = 20
 
 app = Flask(__name__)
 @app.route('/producer', methods = ['GET', 'POST'])
@@ -27,15 +28,13 @@ def send_data():
 def run_producer():
     producer_thread = Thread(target = lambda: app.run(host = '0.0.0.0', port = 8080, debug = False, use_reloader = False), daemon = True)
     threads.append(producer_thread)
-    sleep(2)
-    thread_random = 20
     for _ in range(thread_random):
         client_thread = Thread(target = send_data)
         threads.append(client_thread)
 
     for thread in threads:
         thread.start()
-        sleep(2)
+        sleep(3)
 
     for thread in threads:
         thread.join()

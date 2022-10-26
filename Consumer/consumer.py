@@ -7,7 +7,7 @@ from time import sleep
 
 
 app = Flask(__name__)
-
+thread_random = 20
 threads = []
 
 items_queue = queue.Queue()
@@ -17,7 +17,7 @@ items_queue.join()
 def producer_aggregator():
     data = request.get_json()
     print(f'Item with id: {data["item_id"]} is received!\n')
-    sleep(2)
+    sleep(3)
     items_queue.put(data)
     return {'isSuccess': True}
 
@@ -34,18 +34,15 @@ def send_order():
 def run_consumer():
     consumer_thread = Thread(target = lambda: app.run(host = '0.0.0.0', port = 8082, debug = False, use_reloader = False), daemon = True)
     threads.append(consumer_thread)
-    sleep(3)
-    thread_random = 20
     for _ in range(thread_random):
         thread = Thread(target = send_order)
         threads.append(thread)
 
     for thread in threads:
         thread.start()
-        sleep(2)
+        sleep(3)
 
     for thread in threads:
         thread.join()
-
     
 run_consumer()
