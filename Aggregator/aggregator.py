@@ -35,20 +35,20 @@ def send_data():
         payload = dict({'item_id': item_consumer['item_id'], 'sender': item_consumer['received_from']})
         requests.post('http://localhost:8080/producer', json = payload)
     except (queue.Empty, requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError) as e:
-            pass
+           pass
 
 def start_threads():
-    Thread1 = threading.Timer(3.0, send_data)
+    Thread1 = threading.Timer(1.0, send_data)
     Thread1.start()
-    Thread2 = threading.Timer(3.0, send_data)
+    Thread2 = threading.Timer(1.0, send_data)
     Thread2.start()
-    Thread3 = threading.Timer(3.0, send_data)
+    Thread3 = threading.Timer(1.0, send_data)
     Thread3.start()
-    Thread4 = threading.Timer(3.0, send_data)
+    Thread4 = threading.Timer(1.0, send_data)
     Thread4.start()
-    Thread5 = threading.Timer(3.0, send_data)
+    Thread5 = threading.Timer(1.0, send_data)
     Thread5.start()
-    Thread6 = threading.Timer(3.0, send_data)
+    Thread6 = threading.Timer(1.0, send_data)
     Thread6.start()
 
 if __name__ == "__main__":

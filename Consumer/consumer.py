@@ -12,7 +12,7 @@ items_queue = queue.Queue()
 items_queue.join()
 
 @app.route('/consumer', methods = ['GET', 'POST'])
-def producer_aggregator():
+def consumer():
     data = request.get_json()
     print(f'Item with id: {data["item_id"]} is received from {data["sender"]}!\n')
     items_queue.put(data)
@@ -29,7 +29,7 @@ def send_data():
     
 
 def start_threads():
-    Thread1 = threading.Timer(2.0, send_data)
+    Thread1 = threading.Timer(1.0, send_data)
     Thread1.start()
     Thread2 = threading.Timer(1.0, send_data)
     Thread2.start()
