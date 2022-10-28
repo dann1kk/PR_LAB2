@@ -2,41 +2,51 @@ from flask import Flask, request
 from threading import Thread
 import requests
 import random
+import threading
+from contextlib import suppress
 from time import sleep
-import time
-
-threads = []
-thread_random = 20
 
 app = Flask(__name__)
 @app.route('/producer', methods = ['GET', 'POST'])
 def producer():
     data = request.get_json()
-    print(f'Item with id: {data["item_id"]} is received from consumers!\n')
-    return {'isSuccess': True}
+    print(f'Item with id: {data["item_id"]} is received from {data["sender"]}!\n')
+    return {'status_code': 200}
+
 
 def send_data():
-    try:
-        data = random.randint(1, 1000)
-        payload = dict({'item_id': data})
-        time.sleep(2)
-        print(f"Item with id: {data} is sent to the consumers!")
-        requests.post('http://localhost:8081/aggregator_producer', json = payload, timeout = 0.0000000001)
-    except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
-     pass
+    with suppress(Exception):
+        while True:
+            random_id = random.randint(1, 1000)
+            sender = "Producer"
+            payload = dict({'item_id': random_id, 'received_from': sender})
+            print(f"{sender} sent item with id: {random_id}")
+            requests.post('http://localhost:8081/aggregator', json = payload)
+           
 
-def run_producer():
-    producer_thread = Thread(target = lambda: app.run(host = '0.0.0.0', port = 8080, debug = False, use_reloader = False), daemon = True)
-    threads.append(producer_thread)
-    for _ in range(thread_random):
-        client_thread = Thread(target = send_data)
-        threads.append(client_thread)
-
-    for thread in threads:
-        thread.start()
+def start_threads():
+    Thread1 = threading.Timer(1.0, send_data)
+    Thread1.start()
+    Thread2 = threading.Timer(1.0, send_data)
+    Thread2.start()
+    Thread3 = threading.Timer(1.0, send_data)
+    Thread3.start()
+    Thread4 = threading.Timer(1.0, send_data)
+    Thread4.start()
+    Thread5 = threading.Timer(1.0, send_data)
+    Thread5.start()
+    Thread6 = threading.Timer(1.0, send_data)
+    Thread6.start()
+   
+if __name__ == "__main__":
+    producer_thread = Thread(target = lambda: app.run(host = '0.0.0.0', port = 8080, debug = False, use_reloader = False), daemon= True)
+    producer_thread.start()
+    
+    while True:
+        RefreshThreads = threading.Thread(target= start_threads)
+        RefreshThreads.start()
         sleep(3)
 
-    for thread in threads:
-        thread.join()
+
+
    
-run_producer()
