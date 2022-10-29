@@ -6,11 +6,17 @@ import threading
 from contextlib import suppress
 from time import sleep
 
+Items_ids = []
+
 app = Flask(__name__)
 @app.route('/producer', methods = ['GET', 'POST'])
 def producer():
     data = request.get_json()
-    print(f'Item with id: {data["item_id"]} is received from {data["sender"]}!\n')
+    if(data['item_id'] in Items_ids):
+            Items_ids.remove(data['item_id'])
+            print(f'Item with id: {data["item_id"]} is received from {data["sender"]} !\n')
+    else:
+           print(f'Wrong item with id: {data["item_id"]} is received from {data["sender"]}!\n')
     return {'status_code': 200}
 
 
@@ -18,6 +24,7 @@ def send_data():
     with suppress(Exception):
         while True:
             random_id = random.randint(1, 1000)
+            Items_ids.append(random_id)
             sender = "Producer"
             payload = dict({'item_id': random_id, 'received_from': sender})
             print(f"{sender} sent item with id: {random_id}")
