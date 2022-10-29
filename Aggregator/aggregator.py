@@ -4,6 +4,7 @@ from time import sleep
 from flask import Flask, request
 import requests
 import threading
+from contextlib import suppress
 
 consumer_queue = queue.Queue()
 consumer_queue.join()
@@ -22,20 +23,16 @@ def aggregator():
     return {'status_code': 200}
 
 def send_data():
-    try:
+    with suppress(Exception):
         item_producer = producer_queue.get()
         producer_queue.task_done()
         payload = dict({'item_id': item_producer['item_id'], 'sender': item_producer['received_from']})
         requests.post('http://localhost:8082/consumer', json = payload)
-    except (queue.Empty, requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError) as e:
-            pass
-    try:
+        
         item_consumer = consumer_queue.get()
         consumer_queue.task_done()
         payload = dict({'item_id': item_consumer['item_id'], 'sender': item_consumer['received_from']})
         requests.post('http://localhost:8080/producer', json = payload)
-    except (queue.Empty, requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError) as e:
-           pass
 
 def start_threads():
     Thread1 = threading.Timer(1.0, send_data)
